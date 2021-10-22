@@ -1,0 +1,40 @@
+name: Test-Build
+on:
+  push:
+    branches:
+      - main
+jobs:
+ test-api:
+    runs-on: ubuntu-latest
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+     # Install Node.js environment
+      - name: set up node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+          
+      # Install newman
+      - name: Install the newman command line utility and also install the html extra reporter
+        run: | 
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+          
+      # Make directory to upload the test results
+      - name: Make Directory for results
+        run: mkdir -p testResults
+        
+        
+      # Run the POSTMAN collection
+      - name: Run POSTMAN collection
+        run: |
+          newman run ./tests/venus_groups_01.postman_collection.json -e ./tests/QA.postman_environment.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme  > testResults/runreport1.html 
+          
+     # Upload test results
+      - name: Output the run Details
+        uses: actions/upload-artifact@v2
+        with: 
+          name: RunReports
+          path: testResults
