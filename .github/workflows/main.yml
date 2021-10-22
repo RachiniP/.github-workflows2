@@ -29,6 +29,7 @@ jobs:
         
       # Run the POSTMAN collection
       - name: Run POSTMAN collection
+        if: contains(github.event.label.name, 'Create main' )
         run: |
           newman run ./tests/venus_groups_01.postman_collection.json -e ./tests/QA.postman_environment.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme  > testResults/runreport1.html 
           
